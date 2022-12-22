@@ -1,0 +1,13 @@
+{
+  "name": "whiteboard",
+  "version": "0.0.1",
+  "description": "Root project for white board app",
+  "scripts": {},
+  "keywords": [],
+  "author": "Omid Nejadabbasi",
+  "license": "ISC",
+  "workspaces": [
+    "server",
+    "client"
+  ]
+}
