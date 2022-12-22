@@ -1,4 +1,4 @@
-var net = require("net");
+import * as net from "net";
 
 var HOST = "127.0.0.1";
 var PORT = 6969;
