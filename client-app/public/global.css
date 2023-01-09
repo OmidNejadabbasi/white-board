@@ -88,3 +88,11 @@ button:focus {
 .w-full {
   width: 100%;
 }
+
+.color-red {
+  color: orangered;
+}
+
+.text-centered {
+  text-align: center;
+}

@@ -2,23 +2,31 @@
   import Divider from "./components/Divider.svelte";
   import Space from "./components/Space.svelte";
 
+  let serverAddress = "";
+  let port = 0;
+
+  let errorTxt = "";
+
   function joinServer() {
     console.log("Join Server");
+    socket.connect(port, serverAddress, () => {
+      errorTxt = "CONNECTED";
+    });
   }
 
   function createNewBoard() {}
 
-  socket.connect(6969, "localhost", () => {
-    console.log("Iam Connected!!!");
+  socket.on("error", () => {
+    errorTxt = "Cannot connect to server!";
   });
 </script>
 
 <main class="flex-column justify-center">
   <label for="server">Server Address:</label>
-  <input type="text" name="server" />
+  <input type="text" name="server" bind:value={serverAddress} />
 
   <label for="port">Server Port:</label>
-  <input type="text" name="port" />
+  <input type="number" name="port" bind:value={port} />
 
   <Divider />
 
@@ -38,6 +46,10 @@
       <button on:click={joinServer}>Join</button>
     </div>
   </div>
+
+  <Space size="8" />
+
+  <p class="color-red text-centered">{errorTxt}</p>
 </main>
 
 <style>
