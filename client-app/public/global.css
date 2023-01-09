@@ -29,6 +29,7 @@ a:visited {
 
 label {
   display: block;
+  margin: 0;
 }
 
 input,
@@ -65,4 +66,25 @@ button:not(:disabled):active {
 
 button:focus {
   border-color: #666;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-1 {
+  flex-grow: 1;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-items: center;
+}
+
+.w-full {
+  width: 100%;
 }
