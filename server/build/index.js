@@ -26,11 +26,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var net = __importStar(require("net"));
 var HOST = "127.0.0.1";
 var PORT = 6969;
+var BOARDS = [];
 net
     .createServer(function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
     sock.on("data", function (data) {
-        if (data.startsWith("CREATE")) {
+        var match;
+        if ((match = data.match(/CREATE (d+) (d+)/))) {
         }
     });
     sock.on("close", function (data) {

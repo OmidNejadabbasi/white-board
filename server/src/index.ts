@@ -1,13 +1,17 @@
 import * as net from "net";
+import { Board } from "./Board";
 
 var HOST = "127.0.0.1";
 var PORT = 6969;
+
+let BOARDS: Board[] = [];
 
 net
   .createServer(function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
     sock.on("data", function (data: string) {
-      if (data.startsWith("CREATE")) {
+      let match: RegExpMatchArray | null;
+      if ((match = data.match(/CREATE (d+) (d+)/))) {
       }
     });
     sock.on("close", function (data) {
