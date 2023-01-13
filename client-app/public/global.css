@@ -82,7 +82,11 @@ button:focus {
 }
 
 .justify-center {
-  justify-items: center;
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
 }
 
 .w-full {
@@ -95,4 +99,9 @@ button:focus {
 
 .text-centered {
   text-align: center;
+}
+
+.border-1 {
+  border: 1px #888 solid;
+  border-radius: 2px;
 }

@@ -24,15 +24,29 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var net = __importStar(require("net"));
+var Board_1 = require("./Board");
 var HOST = "127.0.0.1";
 var PORT = 6969;
 var BOARDS = [];
 net
     .createServer(function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
-    sock.on("data", function (data) {
+    sock.on("data", function (dataBuffer) {
+        var _a;
+        var data = dataBuffer.toString();
+        console.log(data);
         var match;
         if ((match = data.match(/CREATE (d+) (d+)/))) {
+            var newBoard = new Board_1.Board(Number.parseInt(match[1]), Number.parseInt(match[2]));
+            newBoard.subscribe(sock);
+            BOARDS.push(newBoard);
+        }
+        else if ((match = data.match(/JOIN (\d+)/))) {
+            (_a = BOARDS.find(function (elem) {
+                if (match) {
+                    return elem.id === Number(match[1]);
+                }
+            })) === null || _a === void 0 ? void 0 : _a.subscribe(sock);
         }
     });
     sock.on("close", function (data) {
@@ -41,3 +55,5 @@ net
 })
     .listen(PORT, HOST);
 console.log("Server listening on " + HOST + ":" + PORT);
+BOARDS.push(new Board_1.Board(200, 400));
+console.log("new Board Id : ", BOARDS[0].id);

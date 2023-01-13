@@ -1,4 +1,4 @@
-import { Socket } from "dgram";
+import { Socket } from "net";
 import * as lod from "lodash";
 
 export class Board {
@@ -13,7 +13,14 @@ export class Board {
 
   constructor(width: number, height: number) {
     this.id = Board.idCounter++;
-    this.pixels = lod.times(height, () => new Array<Pixel>(width));
+    this.pixels = [];
+    for (let i = 0; i < height; i++) {
+      let _arr = new Array(width);
+      lod.fill(_arr, new Pixel(255, 255, 255));
+
+      this.pixels.push(_arr);
+    }
+
     this.width = width;
     this.height = height;
   }
@@ -24,19 +31,19 @@ export class Board {
       let ind = this.sockets.indexOf(socket);
       this.sockets.slice(ind, 1);
     });
-    socket.send(`BOARD ${this.width} ${this.height}\n`);
-    socket.send(this.pixelsLines());
+    socket.write(`BOARD ${this.width} ${this.height}\n`);
+    socket.write(this.pixelsLines());
     socket.on("data", (data: string) => {
       let lines = data.split("\n");
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
         let matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
         if (matches) {
-          let x = Number(matches[1]);
-          let y = Number(matches[2]);
-          let r = Number(matches[3]);
-          let g = Number(matches[4]);
-          let b = Number(matches[5]);
+          let x = Number.parseInt(matches[1]);
+          let y = Number.parseInt(matches[2]);
+          let r = Number.parseInt(matches[3]);
+          let g = Number.parseInt(matches[4]);
+          let b = Number.parseInt(matches[5]);
           this.pixels[x][y] = new Pixel(r, g, b);
         } else {
           console.log("Data format is incorrect!");
@@ -48,7 +55,7 @@ export class Board {
 
   notifyAllBut(sock: Socket) {
     this.sockets.forEach((socket) => {
-      if (socket !== sock) socket.send(this.pixelsLines());
+      if (socket !== sock) socket.write(this.pixelsLines());
     });
   }
 

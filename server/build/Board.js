@@ -27,18 +27,75 @@ exports.Pixel = exports.Board = void 0;
 var lod = __importStar(require("lodash"));
 var Board = /** @class */ (function () {
     function Board(width, height) {
+        this.sockets = [];
         this.id = Board.idCounter++;
-        this.pixels = lod.times(height, function () { return new Array(width); });
+        this.pixels = [];
+        for (var i = 0; i < height; i++) {
+            var _arr = new Array(width);
+            lod.fill(_arr, new Pixel(255, 255, 255));
+            this.pixels.push(_arr);
+        }
+        this.width = width;
+        this.height = height;
     }
+    Board.prototype.subscribe = function (socket) {
+        var _this = this;
+        this.sockets.push(socket);
+        socket.on("close", function () {
+            var ind = _this.sockets.indexOf(socket);
+            _this.sockets.slice(ind, 1);
+        });
+        socket.write("BOARD ".concat(this.width, " ").concat(this.height, "\n"));
+        socket.write(this.pixelsLines());
+        socket.on("data", function (data) {
+            var lines = data.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
+                if (matches) {
+                    var x = Number.parseInt(matches[1]);
+                    var y = Number.parseInt(matches[2]);
+                    var r = Number.parseInt(matches[3]);
+                    var g = Number.parseInt(matches[4]);
+                    var b = Number.parseInt(matches[5]);
+                    _this.pixels[x][y] = new Pixel(r, g, b);
+                }
+                else {
+                    console.log("Data format is incorrect!");
+                }
+            }
+            _this.notifyAllBut(socket);
+        });
+    };
+    Board.prototype.notifyAllBut = function (sock) {
+        var _this = this;
+        this.sockets.forEach(function (socket) {
+            if (socket !== sock)
+                socket.write(_this.pixelsLines());
+        });
+    };
+    Board.prototype.pixelsLines = function () {
+        var string = "";
+        for (var i = 0; i < this.pixels.length; i++) {
+            for (var j = 0; j < this.pixels[i].length; j++) {
+                var p = this.pixels[i][j];
+                string += "".concat(i, " ").concat(j, " ").concat(p.r, " ").concat(p.g, " ").concat(p.b, "\n");
+            }
+        }
+        return string;
+    };
     Board.idCounter = 1001;
     return Board;
 }());
 exports.Board = Board;
 var Pixel = /** @class */ (function () {
-    function Pixel() {
+    function Pixel(r, g, b) {
         this.r = 0;
         this.g = 0;
         this.b = 0;
+        this.r = r;
+        this.g = g;
+        this.b = b;
     }
     return Pixel;
 }());
