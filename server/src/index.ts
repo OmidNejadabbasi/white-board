@@ -25,7 +25,7 @@ net
       } else if ((match = data.match(/JOIN (\d+)/))) {
         BOARDS.find((elem) => {
           if (match) {
-            return elem.id === Number(match[1]);
+            return elem.id === Number.parseInt(match[1]);
           }
         })?.subscribe(sock);
       }
@@ -38,5 +38,5 @@ net
 
 console.log("Server listening on " + HOST + ":" + PORT);
 
-BOARDS.push(new Board(200, 400));
+BOARDS.push(new Board(400, 300));
 console.log("new Board Id : ", BOARDS[0].id);
