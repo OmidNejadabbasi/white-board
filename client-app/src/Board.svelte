@@ -1,7 +1,7 @@
 <script>
   import { Pixel } from "./Pixel";
   import { bufferTime, filter, Subject } from "rxjs";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   export let serverAddress;
   export let port;
@@ -42,28 +42,58 @@
     });
   });
 
-  pixelObservable
-    .pipe(
-      bufferTime(220),
-      filter((a) => a.length > 0)
-    )
-    .subscribe((pixels) => {
-      let boardContext = boardCanvas.getContext("2d");
-      let boardData = boardContext.getImageData(
-        0,
-        0,
-        boardDimen.width,
-        boardDimen.height
-      );
-      for (let i = 0; i < pixels.length; i++) {
-        let index = pixels[i].x * 4 * boardData.width + pixels[i].y * 4;
-        boardData.data[index] = pixels[i].r;
-        boardData.data[index + 1] = pixels[i].g;
-        boardData.data[index + 2] = pixels[i].b;
-        boardData.data[index + 3] = 255;
-      }
-      boardContext.putImageData(boardData, 0, 0);
-    });
+  let canvas = {};
+
+  onMount(() => {
+    pixelObservable
+      .pipe(
+        bufferTime(220),
+        filter((a) => a.length > 0)
+      )
+      .subscribe((pixels) => {
+        let boardContext = boardCanvas.getContext("2d");
+        let boardData = boardContext.getImageData(
+          0,
+          0,
+          boardDimen.width,
+          boardDimen.height
+        );
+        for (let i = 0; i < pixels.length; i++) {
+          let index = pixels[i].x * 4 * boardData.width + pixels[i].y * 4;
+          boardData.data[index] = pixels[i].r;
+          boardData.data[index + 1] = pixels[i].g;
+          boardData.data[index + 2] = pixels[i].b;
+          boardData.data[index + 3] = 255;
+        }
+        boardContext.putImageData(boardData, 0, 0);
+      });
+
+    canvas.node = boardCanvas;
+    canvas.context = boardCanvas.getContext("2d");
+    canvas.context.fillCircle = function (x, y, radius, fillColor) {
+      this.fillStyle = fillColor;
+      this.beginPath();
+      this.moveTo(x, y);
+      this.arc(x, y, radius, 0, Math.PI * 2, false);
+      this.fill();
+    };
+    canvas.node.onmousedown = function (e) {
+      canvas.isDrawing = true;
+    };
+  });
+  function mouseMove(e) {
+    if (!canvas.isDrawing) {
+      return;
+    }
+    var x = e.pageX - this.offsetLeft;
+    var y = e.pageY - this.offsetTop;
+    var radius = 10; // or whatever
+    var fillColor = "#ff0000";
+    canvas.context.fillCircle(x, y, radius, fillColor);
+  }
+  document.onmouseup = function (e) {
+    canvas.isDrawing = false;
+  };
 
   onDestroy(() => {
     socket.end();
@@ -82,6 +112,7 @@
     bind:this={boardCanvas}
     height={boardDimen.height}
     width={boardDimen.width}
+    on:mousemove={mouseMove}
   >
     Shit! HTML Canvas Not supported!
   </canvas>
