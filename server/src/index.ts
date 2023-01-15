@@ -39,4 +39,4 @@ net
 console.log("Server listening on " + HOST + ":" + PORT);
 
 BOARDS.push(new Board(400, 300));
-console.log("new Board Id : ", BOARDS[0].id);
+console.log("New Board Id : ", BOARDS[0].id);
