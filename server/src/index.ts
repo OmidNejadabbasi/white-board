@@ -23,11 +23,16 @@ net
         newBoard.subscribe(sock);
         BOARDS.push(newBoard);
       } else if ((match = data.match(/JOIN (\d+)/))) {
-        BOARDS.find((elem) => {
+        let board = BOARDS.find((elem) => {
           if (match) {
             return elem.id === Number.parseInt(match[1]);
           }
-        })?.subscribe(sock);
+        });
+        if (board) {
+          board.subscribe(sock);
+        } else {
+          sock.write("BOARD NOT FOUND");
+        }
       }
     });
     sock.on("close", function (data) {

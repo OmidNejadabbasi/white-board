@@ -13,14 +13,16 @@
 
   function joinServer() {
     console.log("Join Server");
+  }
+
+  let widthInput, heightInput;
+  function createNewBoard() {
     socket.connect(port, serverAddress, () => {
       errorTxt = "CONNECTED";
       boardValid = true;
-      socket.write(`JOIN ${boardId}\n`);
+      socket.write(`CREATE ${widthInput} ${heightInput}`);
     });
   }
-
-  function createNewBoard() {}
 
   socket.on("error", () => {
     errorTxt = "Cannot connect to server!";
@@ -39,7 +41,23 @@
 
     <div class="flex">
       <div class="flex-column w-full">
-        <p>To create new board:</p>
+        <div class="flex justify-center">
+          <input
+            type="number"
+            bind:value={widthInput}
+            name="width"
+            id="width"
+            placeholder="Width"
+          />
+          <Space vertical={false} size="3" />
+          <input
+            type="number"
+            bind:value={heightInput}
+            name="height"
+            id="height"
+            placeholder="Height"
+          />
+        </div>
         <button on:click={createNewBoard}>Create New Board</button>
       </div>
       <Divider vertical={true} />

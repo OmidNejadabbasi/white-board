@@ -32,6 +32,9 @@ label {
   margin: 0;
 }
 
+input {
+  min-width: 30px;
+}
 input,
 button,
 select,

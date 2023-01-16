@@ -32,7 +32,6 @@ net
     .createServer(function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
     sock.on("data", function (dataBuffer) {
-        var _a;
         var data = dataBuffer.toString();
         console.log(data);
         var match;
@@ -42,11 +41,17 @@ net
             BOARDS.push(newBoard);
         }
         else if ((match = data.match(/JOIN (\d+)/))) {
-            (_a = BOARDS.find(function (elem) {
+            var board = BOARDS.find(function (elem) {
                 if (match) {
                     return elem.id === Number.parseInt(match[1]);
                 }
-            })) === null || _a === void 0 ? void 0 : _a.subscribe(sock);
+            });
+            if (board) {
+                board.subscribe(sock);
+            }
+            else {
+                sock.write("BOARD NOT FOUND");
+            }
         }
     });
     sock.on("close", function (data) {

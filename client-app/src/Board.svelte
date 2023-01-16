@@ -16,6 +16,10 @@
   let prevData = [];
   let boardData, boardContext;
 
+  socket.on("error", () => {
+    boardValid = false;
+  });
+
   socket.on("data", (data) => {
     data = data.toString();
     let lines = data.split("\n");
@@ -64,6 +68,28 @@
   onMount(() => {
     setTimeout(() => {});
     pixelObservable.pipe(bufferTime(4000)).subscribe((pixels) => {
+      console.log("pixesl observable");
+      boardContext = boardCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
+      boardData = boardContext.getImageData(
+        0,
+        0,
+        boardDimen.width,
+        boardDimen.height
+      );
+      if (pixels.length > 0) {
+        for (let i = 0; i < pixels.length; i++) {
+          let index = pixels[i].y * 4 * boardData.width + pixels[i].x * 4;
+          boardData.data[index] = pixels[i].r;
+          boardData.data[index + 1] = pixels[i].g;
+          boardData.data[index + 2] = pixels[i].b;
+          boardData.data[index + 3] = 255;
+          console.log("pixel updated: " + JSON.stringify(pixels[i]));
+        }
+        boardContext.putImageData(boardData, 0, 0);
+        prevData = lod.chunk(boardData.data, 4);
+      }
       boardContext = boardCanvas.getContext("2d", {
         willReadFrequently: true,
       });
@@ -90,27 +116,6 @@
         if (sentData.length > 0) {
           debugger;
           socket.write(sentData);
-        }
-        console.log("pixesl observable");
-        boardContext = boardCanvas.getContext("2d", {
-          willReadFrequently: true,
-        });
-        boardData = boardContext.getImageData(
-          0,
-          0,
-          boardDimen.width,
-          boardDimen.height
-        );
-        if (pixels.length > 0) {
-          for (let i = 0; i < pixels.length; i++) {
-            let index = pixels[i].y * 4 * boardData.width + pixels[i].x * 4;
-            boardData.data[index] = pixels[i].r;
-            boardData.data[index + 1] = pixels[i].g;
-            boardData.data[index + 2] = pixels[i].b;
-            boardData.data[index + 3] = 255;
-            console.log("pixel updated: " + JSON.stringify(pixels[i]));
-          }
-          boardContext.putImageData(boardData, 0, 0);
         }
         prevData = lod.chunk(boardData.data, 4);
       });
