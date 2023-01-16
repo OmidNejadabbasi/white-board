@@ -15,7 +15,7 @@ net
       console.log(data);
 
       let match: RegExpMatchArray | null;
-      if ((match = data.match(/CREATE (d+) (d+)/))) {
+      if ((match = data.match(/CREATE (\d+) (\d+)/))) {
         let newBoard = new Board(
           Number.parseInt(match[1]),
           Number.parseInt(match[2])
@@ -38,5 +38,5 @@ net
 
 console.log("Server listening on " + HOST + ":" + PORT);
 
-BOARDS.push(new Board(400, 300));
+BOARDS.push(new Board(40, 30));
 console.log("New Board Id : ", BOARDS[0].id);

@@ -34,17 +34,19 @@ export class Board {
     socket.write(`BOARD ${this.width} ${this.height}\n`);
     socket.write(this.pixelsLines());
     socket.on("data", (data: string) => {
-      let lines = data.split("\n");
+      data = data.toString();
+      let lines = data.split("\n").filter((el) => el.length > 0);
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
         let matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
         if (matches) {
+          console.log(line);
           let x = Number.parseInt(matches[1]);
           let y = Number.parseInt(matches[2]);
           let r = Number.parseInt(matches[3]);
           let g = Number.parseInt(matches[4]);
           let b = Number.parseInt(matches[5]);
-          this.pixels[x][y] = new Pixel(r, g, b);
+          this.pixels[y][x] = new Pixel(r, g, b);
         } else {
           console.log("Data format is incorrect!");
         }
@@ -64,7 +66,7 @@ export class Board {
     for (let i = 0; i < this.pixels.length; i++) {
       for (let j = 0; j < this.pixels[i].length; j++) {
         let p = this.pixels[i][j];
-        string += `${i} ${j} ${p.r} ${p.g} ${p.b}\n`;
+        string += `${j} ${i} ${p.r} ${p.g} ${p.b}\n`;
       }
     }
 

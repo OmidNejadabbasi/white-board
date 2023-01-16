@@ -48,17 +48,19 @@ var Board = /** @class */ (function () {
         socket.write("BOARD ".concat(this.width, " ").concat(this.height, "\n"));
         socket.write(this.pixelsLines());
         socket.on("data", function (data) {
-            var lines = data.split("\n");
+            data = data.toString();
+            var lines = data.split("\n").filter(function (el) { return el.length > 0; });
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];
                 var matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
                 if (matches) {
+                    console.log(line);
                     var x = Number.parseInt(matches[1]);
                     var y = Number.parseInt(matches[2]);
                     var r = Number.parseInt(matches[3]);
                     var g = Number.parseInt(matches[4]);
                     var b = Number.parseInt(matches[5]);
-                    _this.pixels[x][y] = new Pixel(r, g, b);
+                    _this.pixels[y][x] = new Pixel(r, g, b);
                 }
                 else {
                     console.log("Data format is incorrect!");
@@ -79,7 +81,7 @@ var Board = /** @class */ (function () {
         for (var i = 0; i < this.pixels.length; i++) {
             for (var j = 0; j < this.pixels[i].length; j++) {
                 var p = this.pixels[i][j];
-                string += "".concat(i, " ").concat(j, " ").concat(p.r, " ").concat(p.g, " ").concat(p.b, "\n");
+                string += "".concat(j, " ").concat(i, " ").concat(p.r, " ").concat(p.g, " ").concat(p.b, "\n");
             }
         }
         return string;

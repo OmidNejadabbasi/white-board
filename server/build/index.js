@@ -36,7 +36,7 @@ net
         var data = dataBuffer.toString();
         console.log(data);
         var match;
-        if ((match = data.match(/CREATE (d+) (d+)/))) {
+        if ((match = data.match(/CREATE (\d+) (\d+)/))) {
             var newBoard = new Board_1.Board(Number.parseInt(match[1]), Number.parseInt(match[2]));
             newBoard.subscribe(sock);
             BOARDS.push(newBoard);
@@ -55,5 +55,5 @@ net
 })
     .listen(PORT, HOST);
 console.log("Server listening on " + HOST + ":" + PORT);
-BOARDS.push(new Board_1.Board(400, 300));
+BOARDS.push(new Board_1.Board(40, 30));
 console.log("New Board Id : ", BOARDS[0].id);
