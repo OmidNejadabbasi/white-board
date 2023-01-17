@@ -3,6 +3,8 @@
   import { bufferTime, filter, Subject } from "rxjs";
   import { onDestroy, onMount } from "svelte";
   import * as lod from "lodash";
+  import ColorPicker from "svelte-awesome-color-picker";
+  import Space from "./components/Space.svelte";
 
   export let serverAddress;
   export let port;
@@ -16,6 +18,9 @@
   let prevData = [];
   let boardData, boardContext;
 
+  let brushColor = "#ff0000";
+  let brushSize = 8;
+
   socket.on("error", () => {
     boardValid = false;
   });
@@ -27,7 +32,6 @@
       if (line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/)) {
         let matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
         if (matches) {
-          console.log(line);
           let x = Number.parseInt(matches[1]);
           let y = Number.parseInt(matches[2]);
           let r = Number.parseInt(matches[3]);
@@ -37,8 +41,8 @@
         } else {
           console.log("Data format is incorrect!");
         }
-      } else if (line.match(/BOARD (\d+) (\d+)/)) {
-        let boardInfo = line.match(/BOARD (\d+) (\d+)/);
+      } else if (line.match(/BOARD (\d+) (\d+) ID (.+)/)) {
+        let boardInfo = line.match(/BOARD (\d+) (\d+) ID (.+)/);
         console.log(line);
         boardValid = true;
         if (boardInfo) {
@@ -47,6 +51,7 @@
             height: Number.parseInt(boardInfo[2]),
           };
           console.log(boardDimen);
+          boardId = boardInfo[3];
         }
         boardContext = boardCanvas.getContext("2d", {
           willReadFrequently: true,
@@ -57,7 +62,6 @@
           boardDimen.width,
           boardDimen.height
         );
-        console.log(boardData);
         prevData = lod.chunk(boardData.data, 4);
       }
     });
@@ -67,8 +71,7 @@
 
   onMount(() => {
     setTimeout(() => {});
-    pixelObservable.pipe(bufferTime(4000)).subscribe((pixels) => {
-      console.log("pixesl observable");
+    pixelObservable.pipe(bufferTime(300)).subscribe((pixels) => {
       boardContext = boardCanvas.getContext("2d", {
         willReadFrequently: true,
       });
@@ -85,7 +88,6 @@
           boardData.data[index + 1] = pixels[i].g;
           boardData.data[index + 2] = pixels[i].b;
           boardData.data[index + 3] = 255;
-          console.log("pixel updated: " + JSON.stringify(pixels[i]));
         }
         boardContext.putImageData(boardData, 0, 0);
         prevData = lod.chunk(boardData.data, 4);
@@ -99,7 +101,6 @@
         boardDimen.width,
         boardDimen.height
       );
-      debugger;
       lod.chunk(lod.chunk(boardData.data, 4), 4000).forEach((val, index) => {
         let sentData = "";
         index = index * 4000;
@@ -114,11 +115,11 @@
           }
         }
         if (sentData.length > 0) {
-          debugger;
           socket.write(sentData);
+          console.log(index);
         }
-        prevData = lod.chunk(boardData.data, 4);
       });
+      prevData = lod.chunk(boardData.data, 4);
     });
 
     canvas.node = boardCanvas;
@@ -140,8 +141,8 @@
     }
     var x = e.pageX - this.offsetLeft;
     var y = e.pageY - this.offsetTop;
-    var radius = 10; // or whatever
-    var fillColor = "#ff0000";
+    var radius = brushSize / 2; // or whatever
+    var fillColor = brushColor;
     canvas.context.fillCircle(x, y, radius, fillColor);
   }
   document.onmouseup = function (e) {
@@ -151,15 +152,24 @@
   onDestroy(() => {
     socket.end();
   });
+  $: console.log(brushColor);
 </script>
 
 <div class="flex-column align-center">
   <p>
     {serverAddress}:{port} - Board ID: {boardId}
   </p>
-  <p class="text-center">
-    {boardDimen.width} * {boardDimen.height}
-  </p>
+  <div class="flex justify-center align-center">
+    <div>
+      {boardDimen.width} * {boardDimen.height}
+    </div>
+
+    <Space vertical={false} size="5" />
+    <ColorPicker bind:hex={brushColor} />
+    <Space vertical={false} size="5" />
+    <span>Size: <input type="number" bind:value={brushSize} /></span>
+  </div>
+  <Space size="8" />
   <canvas
     class="border-1"
     bind:this={boardCanvas}

@@ -13,6 +13,11 @@
 
   function joinServer() {
     console.log("Join Server");
+    socket.connect(port, serverAddress, () => {
+      errorTxt = "CONNECTED";
+      boardValid = true;
+      socket.write(`JOIN ${boardId}`);
+    });
   }
 
   let widthInput, heightInput;

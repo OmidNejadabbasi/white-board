@@ -31,7 +31,8 @@ export class Board {
       let ind = this.sockets.indexOf(socket);
       this.sockets.slice(ind, 1);
     });
-    socket.write(`BOARD ${this.width} ${this.height}\n`);
+    socket.write(`BOARD ${this.width} ${this.height} ID ${this.id}\n`);
+    console.log(`BOARD ${this.width} ${this.height} ID ${this.id}\n`);
     socket.write(this.pixelsLines());
     socket.on("data", (data: string) => {
       data = data.toString();

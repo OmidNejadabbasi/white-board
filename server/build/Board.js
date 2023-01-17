@@ -45,7 +45,8 @@ var Board = /** @class */ (function () {
             var ind = _this.sockets.indexOf(socket);
             _this.sockets.slice(ind, 1);
         });
-        socket.write("BOARD ".concat(this.width, " ").concat(this.height, "\n"));
+        socket.write("BOARD ".concat(this.width, " ").concat(this.height, " ID ").concat(this.id, "\n"));
+        console.log("BOARD ".concat(this.width, " ").concat(this.height, " ID ").concat(this.id, "\n"));
         socket.write(this.pixelsLines());
         socket.on("data", function (data) {
             data = data.toString();
