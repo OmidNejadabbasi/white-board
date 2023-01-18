@@ -1,14 +1,14 @@
 {
   "name": "create-svelte-electron-app",
   "version": "1.2.0",
-  "description": "The boilerplate code to get started creating Cross-platform Desktop Apps with Electron and Svelte as front-end technology.",
+  "description": "White Board app",
   "private": false,
   "license": "MIT",
   "main": "main.js",
-  "author": "Souleh Shaikh <soulehshaikh99@gmail.com>",
+  "author": "Omid Nejadabbasi <nejadabbasio@gmail.com>",
   "build": {
     "icon": "public/favicon.png",
-    "productName": "Svelte and Electron App",
+    "productName": "White Board",
     "files": [
       "public/**/*",
       "main.js",

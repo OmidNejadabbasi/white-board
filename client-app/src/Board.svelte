@@ -71,7 +71,7 @@
 
   onMount(() => {
     setTimeout(() => {});
-    pixelObservable.pipe(bufferTime(300)).subscribe((pixels) => {
+    pixelObservable.pipe(bufferTime(250)).subscribe((pixels) => {
       boardContext = boardCanvas.getContext("2d", {
         willReadFrequently: true,
       });
@@ -116,7 +116,6 @@
         }
         if (sentData.length > 0) {
           socket.write(sentData);
-          console.log(index);
         }
       });
       prevData = lod.chunk(boardData.data, 4);

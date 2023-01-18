@@ -55,7 +55,6 @@ var Board = /** @class */ (function () {
                 var line = lines[i];
                 var matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
                 if (matches) {
-                    console.log(line);
                     var x = Number.parseInt(matches[1]);
                     var y = Number.parseInt(matches[2]);
                     var r = Number.parseInt(matches[3]);

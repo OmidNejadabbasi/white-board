@@ -10,9 +10,11 @@ let BOARDS: Board[] = [];
 net
   .createServer(function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
+    sock.on("error", (socket) => {
+      console.log("client error\n");
+    });
     sock.on("data", function (dataBuffer: Buffer) {
       let data = dataBuffer.toString();
-      console.log(data);
 
       let match: RegExpMatchArray | null;
       if ((match = data.match(/CREATE (\d+) (\d+)/))) {

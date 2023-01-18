@@ -31,9 +31,11 @@ var BOARDS = [];
 net
     .createServer(function (sock) {
     console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
+    sock.on("error", function (socket) {
+        console.log("client error\n");
+    });
     sock.on("data", function (dataBuffer) {
         var data = dataBuffer.toString();
-        console.log(data);
         var match;
         if ((match = data.match(/CREATE (\d+) (\d+)/))) {
             var newBoard = new Board_1.Board(Number.parseInt(match[1]), Number.parseInt(match[2]));

@@ -41,7 +41,6 @@ export class Board {
         let line = lines[i];
         let matches = line.match(/(\d+) (\d+) (\d+) (\d+) (\d+)/);
         if (matches) {
-          console.log(line);
           let x = Number.parseInt(matches[1]);
           let y = Number.parseInt(matches[2]);
           let r = Number.parseInt(matches[3]);
